@@ -2,16 +2,12 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"time"
 )
 
 //
 // ---- Core Scheduler Types ----
 //
-type Action func()
-
 type Job struct {
 	Name string
 	Time string // "HH:MM"
@@ -61,31 +57,5 @@ func runJob(job Job) {
 		job.Run()
 
 		time.Sleep(1 * time.Second)
-	}
-}
-
-//
-// ---- Example Actions ----
-//
-func playMusic(file string) Action {
-	return func() {
-		cmd := exec.Command(
-			vlcPath,
-			"--intf", "dummy",
-			"--play-and-exit",
-			file,
-		)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		_ = cmd.Run()
-	}
-}
-
-func runCommand(command string, args ...string) Action {
-	return func() {
-		cmd := exec.Command(command, args...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		_ = cmd.Run()
 	}
 }

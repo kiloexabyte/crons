@@ -1,23 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
 
-const vlcPath = "/usr/bin/vlc"
+	"github.com/joho/godotenv"
+)
 
-//
 // ---- Main ----
-//
 func main() {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("Error loading .env: %v", err)
+	}
+
 	jobs := []Job{
 		{
-			Name: "Morning Music",
-			Time: "07:00",
-			Run:  playMusic("/home/youruser/music/morning.mp4"),
+			Name: "Dim Lights",
+			Time: "20:00",
+			Run:  setAllLightsBrightness(10),
 		},
 		{
-			Name: "Cleanup Temp",
-			Time: "02:00",
-			Run:  runCommand("/usr/bin/rm", "-rf", "/tmp/myapp"),
+			Name: "Brighten Lights",
+			Time: "05:00",
+			Run:  setAllLightsBrightness(100),
 		},
 	}
 

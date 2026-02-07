@@ -5,9 +5,13 @@ go 1.24.7
 toolchain go1.24.13
 
 require (
+	crons v0.0.0
+	github.com/joho/godotenv v1.5.1
 	lesiw.io/command v0.0.0-20260123045449-df2547cb71f2
 	lesiw.io/ops v0.14.0
 )
+
+replace crons => ..
 
 require (
 	golang.org/x/sync v0.18.0 // indirect

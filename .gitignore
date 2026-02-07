@@ -1,4 +1,6 @@
 .claude
 .env
+crons
 crons.exe
+crons.service
 ops.exe

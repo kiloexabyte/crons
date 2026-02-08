@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -26,10 +27,22 @@ func main() {
 		},
 	}
 
+	intervalJobs := []IntervalJob{
+		{
+			Name:     "Health Check",
+			Interval: 5 * time.Minute,
+			Run:      checkServices(),
+		},
+	}
+
 	fmt.Println("Custom cron scheduler started")
 
 	for _, job := range jobs {
 		go runJob(job)
+	}
+
+	for _, job := range intervalJobs {
+		go runIntervalJob(job)
 	}
 
 	select {} // block forever

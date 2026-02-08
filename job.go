@@ -55,3 +55,19 @@ func runJob(job Job) {
 		time.Sleep(1 * time.Second)
 	}
 }
+
+// IntervalJob runs on a fixed interval
+type IntervalJob struct {
+	Name     string
+	Interval time.Duration
+	Run      Action
+}
+
+func runIntervalJob(job IntervalJob) {
+	fmt.Printf("Starting [%s] every %s\n", job.Name, job.Interval)
+	for {
+		fmt.Printf("Running [%s]\n", job.Name)
+		job.Run()
+		time.Sleep(job.Interval)
+	}
+}

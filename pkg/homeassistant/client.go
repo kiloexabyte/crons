@@ -11,7 +11,7 @@ import (
 const DefaultURL = "http://homeassistant:8123"
 
 var AllLights = []string{"light.pc1", "light.pc2", "light.pc3", "light.kitchen1", "light.kitchen2",
- "light.kitchen3", "light.livingroom1", "light.livingroom2", "light.livingroom3"}
+ "light.kitchen3", "light.livingroom1", "light.livingroom2", "light.livingroom3", "light.bed"}
 
 type brightnessPayload struct {
 	EntityID      string `json:"entity_id"`

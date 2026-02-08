@@ -48,6 +48,10 @@ func (Ops) Deploy() error {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
+	fmt.Println("==> Stopping existing service...")
+	// Ignore error - service may not exist on first deploy
+	_ = sh.Exec(ctx, "ssh", piHost, "sudo", "systemctl", "stop", serviceName)
+
 	fmt.Println("==> Copying binary to Pi...")
 	if err := sh.Exec(ctx, "scp", "crons", piHost+":"+piDir+"/crons"); err != nil {
 		return fmt.Errorf("failed to copy binary: %w", err)

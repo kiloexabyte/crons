@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -21,6 +24,9 @@ func checkServices() Action {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
+
+	// Track previous state for each service
+	wasUp := make(map[string]bool)
 
 	return func() {
 		for _, svc := range services {
@@ -44,10 +50,44 @@ func checkServices() Action {
 				lastErr = fmt.Errorf("status %d", resp.StatusCode)
 			}
 
+			prev, seen := wasUp[svc.Name]
+
 			if !up {
 				fmt.Printf("[FAIL] %s is DOWN: %v\n", svc.Name, lastErr)
-				// TODO: send discord alert
+				if !seen || prev {
+					sendDiscordAlert(client, fmt.Sprintf("🔴 **%s** is DOWN: %v", svc.Name, lastErr))
+				}
+			} else if seen && !prev {
+				sendDiscordAlert(client, fmt.Sprintf("🟢 **%s** has recovered", svc.Name))
 			}
+
+			wasUp[svc.Name] = up
 		}
+	}
+}
+
+func sendDiscordAlert(client *http.Client, message string) {
+	webhookURL := os.Getenv("DISCORD_WEBHOOK")
+	if webhookURL == "" {
+		fmt.Println("DISCORD_WEBHOOK not set, skipping alert")
+		return
+	}
+
+	payload := map[string]string{"content": message}
+	body, err := json.Marshal(payload)
+	if err != nil {
+		fmt.Printf("Error marshaling discord payload: %v\n", err)
+		return
+	}
+
+	resp, err := client.Post(webhookURL, "application/json", bytes.NewReader(body))
+	if err != nil {
+		fmt.Printf("Error sending discord alert: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		fmt.Printf("Discord webhook returned status %d\n", resp.StatusCode)
 	}
 }

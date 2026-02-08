@@ -85,7 +85,7 @@ func sendDiscordAlert(client *http.Client, message string) {
 		fmt.Printf("Error sending discord alert: %v\n", err)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode >= 400 {
 		fmt.Printf("Discord webhook returned status %d\n", resp.StatusCode)

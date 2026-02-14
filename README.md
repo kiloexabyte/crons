@@ -4,8 +4,9 @@ A custom cron scheduler for Home Assistant light control and service health moni
 
 ## Features
 
-- **Light Scheduling**: Automatically dim lights at night and brighten in the morning
-- **Health Checks**: Monitor NAS services (Jellyfin, Sonarr, Radarr) with Discord alerts on failure/recovery
+- **Light Scheduling**: Automatically dim lights at night (8 PM → 10%) and brighten in the morning (5 AM → 100%)
+- **Heater Control**: Turn heater on at 5 AM and off at 6 AM
+- **Health Checks**: Monitor NAS services (Jellyfin, Sonarr, Radarr) every 5 minutes with Discord alerts on failure/recovery
 
 ## Setup
 
@@ -27,8 +28,8 @@ A custom cron scheduler for Home Assistant light control and service health moni
 | `op build` | Build for Raspberry Pi (linux/arm64) |
 | `op deploy` | Build and deploy to Pi |
 | `op lint` | Run linters |
-| `op testlights` | Test lights (`BRIGHTNESS=50 op testlights`) |
-| `op testdiscord` | Test Discord webhook |
+| `BRIGHTNESS=50 op testlights` | Test lights at specified brightness (0-100) |
+| `STATE=on op testheater` | Test heater (on/off) |
 
 ## Requirements
 

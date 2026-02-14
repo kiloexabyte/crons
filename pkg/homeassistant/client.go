@@ -83,3 +83,42 @@ func (c *Client) SetAllLightsBrightness(percent int) error {
 	}
 	return nil
 }
+
+type switchPayload struct {
+	EntityID string `json:"entity_id"`
+}
+
+func (c *Client) SetSwitch(entityID string, on bool) error {
+	service := "turn_off"
+	if on {
+		service = "turn_on"
+	}
+
+	url := fmt.Sprintf("%s/api/services/switch/%s", c.URL, service)
+
+	body, _ := json.Marshal(switchPayload{EntityID: entityID})
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	if err != nil {
+		return fmt.Errorf("error creating request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+c.Token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error calling Home Assistant: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("home assistant returned status %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+func (c *Client) SetHeater(on bool) error {
+	return c.SetSwitch("switch.heater", on)
+}

@@ -25,6 +25,16 @@ func main() {
 			Time: "05:00",
 			Run:  setAllLightsBrightness(100),
 		},
+		{
+			Name: "Heater On",
+			Time: "05:00",
+			Run:  setHeater(true),
+		},
+		{
+			Name: "Heater Off",
+			Time: "06:00",
+			Run:  setHeater(false),
+		},
 	}
 
 	intervalJobs := []IntervalJob{

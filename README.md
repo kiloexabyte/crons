@@ -6,7 +6,7 @@ A custom cron scheduler for Home Assistant light control and service health moni
 
 - **Light Scheduling**: Automatically dim lights at night (8 PM → 10%) and brighten in the morning (5 AM → 100%)
 - **Heater Control**: Turn heater on at 5 AM and off at 6 AM
-- **Health Checks**: Monitor NAS services (Jellyfin, Sonarr, Radarr) every 5 minutes with Discord alerts on failure/recovery
+- **Health Checks**: Monitor services (Jellyfin, Sonarr, Radarr, Home Assistant) every 5 minutes with Discord alerts on failure/recovery
 
 ## Setup
 

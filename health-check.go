@@ -11,13 +11,20 @@ import (
 
 var nasIPs = []string{"192.168.50.11", "192.168.50.12"}
 
-var services = []struct {
+var nasServices = []struct {
 	Name string
 	Port string
 }{
 	{"Jellyfin", "8096"},
 	{"Sonarr", "8989"},
 	{"Radarr", "8310"},
+}
+
+var directServices = []struct {
+	Name string
+	URL  string
+}{
+	{"Home Assistant", "http://homeassistant:8123/"},
 }
 
 func checkServices() Action {
@@ -29,7 +36,8 @@ func checkServices() Action {
 	wasUp := make(map[string]bool)
 
 	return func() {
-		for _, svc := range services {
+		// Check NAS services (with IP fallback)
+		for _, svc := range nasServices {
 			up := false
 			var lastErr error
 
@@ -50,20 +58,45 @@ func checkServices() Action {
 				lastErr = fmt.Errorf("status %d", resp.StatusCode)
 			}
 
-			prev, seen := wasUp[svc.Name]
+			checkResult(client, wasUp, svc.Name, up, lastErr)
+		}
 
-			if !up {
-				fmt.Printf("[FAIL] %s is DOWN: %v\n", svc.Name, lastErr)
-				if !seen || prev {
-					sendDiscordAlert(client, fmt.Sprintf("🔴 **%s** is DOWN: %v", svc.Name, lastErr))
+		// Check direct URL services
+		for _, svc := range directServices {
+			up := false
+			var lastErr error
+
+			resp, err := client.Get(svc.URL)
+			if err != nil {
+				lastErr = err
+			} else {
+				_ = resp.Body.Close()
+				if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+					fmt.Printf("[OK] %s is UP (status %d)\n", svc.Name, resp.StatusCode)
+					up = true
+				} else {
+					lastErr = fmt.Errorf("status %d", resp.StatusCode)
 				}
-			} else if seen && !prev {
-				sendDiscordAlert(client, fmt.Sprintf("🟢 **%s** has recovered", svc.Name))
 			}
 
-			wasUp[svc.Name] = up
+			checkResult(client, wasUp, svc.Name, up, lastErr)
 		}
 	}
+}
+
+func checkResult(client *http.Client, wasUp map[string]bool, name string, up bool, lastErr error) {
+	prev, seen := wasUp[name]
+
+	if !up {
+		fmt.Printf("[FAIL] %s is DOWN: %v\n", name, lastErr)
+		if !seen || prev {
+			sendDiscordAlert(client, fmt.Sprintf("🔴 **%s** is DOWN: %v", name, lastErr))
+		}
+	} else if seen && !prev {
+		sendDiscordAlert(client, fmt.Sprintf("🟢 **%s** has recovered", name))
+	}
+
+	wasUp[name] = up
 }
 
 func sendDiscordAlert(client *http.Client, message string) {

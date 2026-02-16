@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-// ---- Core Scheduler Types ----
+// Core Scheduler Types.
 type Job struct {
 	Name string
 	Time string // "HH:MM"
 	Run  Action
 }
 
-// ---- Scheduler Logic ----
+// Scheduler Logic.
 func nextRun(timeStr string) time.Time {
 	now := time.Now()
 
@@ -56,7 +56,7 @@ func runJob(job Job) {
 	}
 }
 
-// IntervalJob runs on a fixed interval
+// IntervalJob runs on a fixed interval.
 type IntervalJob struct {
 	Name     string
 	Interval time.Duration

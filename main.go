@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// ---- Main ----
+// Main entry point.
 func main() {
 	if err := godotenv.Load(".env"); err != nil {
 		log.Printf("Error loading .env: %v", err)

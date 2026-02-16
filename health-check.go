@@ -51,7 +51,8 @@ func checkServices() Action {
 				_ = resp.Body.Close()
 
 				if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-					fmt.Printf("[OK] %s is UP at %s (status %d)\n", svc.Name, ip, resp.StatusCode)
+					fmt.Printf("[OK] %s is UP at %s (status %d)\n",
+						svc.Name, ip, resp.StatusCode)
 					up = true
 					break
 				}
@@ -72,7 +73,8 @@ func checkServices() Action {
 			} else {
 				_ = resp.Body.Close()
 				if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-					fmt.Printf("[OK] %s is UP (status %d)\n", svc.Name, resp.StatusCode)
+					fmt.Printf("[OK] %s is UP (status %d)\n",
+						svc.Name, resp.StatusCode)
 					up = true
 				} else {
 					lastErr = fmt.Errorf("status %d", resp.StatusCode)
@@ -84,13 +86,20 @@ func checkServices() Action {
 	}
 }
 
-func checkResult(client *http.Client, wasUp map[string]bool, name string, up bool, lastErr error) {
+func checkResult(
+	client *http.Client,
+	wasUp map[string]bool,
+	name string,
+	up bool,
+	lastErr error,
+) {
 	prev, seen := wasUp[name]
 
 	if !up {
 		fmt.Printf("[FAIL] %s is DOWN: %v\n", name, lastErr)
 		if !seen || prev {
-			sendDiscordAlert(client, fmt.Sprintf("🔴 **%s** is DOWN: %v", name, lastErr))
+			msg := fmt.Sprintf("🔴 **%s** is DOWN: %v", name, lastErr)
+			sendDiscordAlert(client, msg)
 		}
 	} else if seen && !prev {
 		sendDiscordAlert(client, fmt.Sprintf("🟢 **%s** has recovered", name))
@@ -113,7 +122,8 @@ func sendDiscordAlert(client *http.Client, message string) {
 		return
 	}
 
-	resp, err := client.Post(webhookURL, "application/json", bytes.NewReader(body))
+	resp, err := client.Post(
+		webhookURL, "application/json", bytes.NewReader(body))
 	if err != nil {
 		fmt.Printf("Error sending discord alert: %v\n", err)
 		return

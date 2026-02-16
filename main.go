@@ -27,7 +27,7 @@ func main() {
 		},
 		{
 			Name: "Heater On",
-			Time: "05:00",
+			Time: "04:00",
 			Run:  setHeater(true),
 		},
 		{

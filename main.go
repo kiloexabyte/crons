@@ -32,7 +32,7 @@ func main() {
 		},
 		{
 			Name: "Heater Off",
-			Time: "06:30",
+			Time: "07:00",
 			Run:  setHeater(false),
 		},
 	}
